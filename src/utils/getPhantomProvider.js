@@ -1,3 +1,5 @@
+import detectEthereumProvider from '@metamask/detect-provider';
+
 const getPhantomProvider = () => {
     if ('phantom' in window) {
         const anyWindow = window;

@@ -15,8 +15,8 @@ const StyledMyPage = styled.main`
 `
 
 const MyPage = () => {
-    const { wallet } = useContext(WalletContext);
-    // const wallet = useSelector((state) => state.wallet);
+    //const { wallet } = useContext(WalletContext);
+    const wallet = useSelector((state) => state.wallet);
 
     return (
         <StyledMyPage>

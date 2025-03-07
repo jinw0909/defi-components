@@ -1,8 +1,7 @@
-import React, { useCallback, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PhantomConnect, OkxConnect, MetamaskConnect } from '../../components';
-import {WalletContext } from '../../context/WalletContext';
-import {useSelector, useDispatch} from "react-redux";
-import {clearWallet, updateWallet} from "../../context/walletSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { clearWallet } from "../../context/walletSlice";
 
 const ComponentA = ({ connectedWallet, onClick, onLogout, showLogoutButton }) => {
     return (
@@ -32,7 +31,8 @@ const ComponentA = ({ connectedWallet, onClick, onLogout, showLogoutButton }) =>
         </div>
     );
 };
-const ComponentB = () => {
+
+const ComponentB = ({ onWalletConnected }) => {
     return (
         <div
             style={{
@@ -44,29 +44,35 @@ const ComponentB = () => {
             }}
         >
             <h4>Select a wallet to connect:</h4>
-            <PhantomConnect/>
-            <OkxConnect/>
-            <MetamaskConnect/>
+            {/* Pass the onWalletConnected callback to PhantomConnect */}
+            <PhantomConnect onConnected={onWalletConnected} />
+            <OkxConnect />
+            <MetamaskConnect />
         </div>
     );
 };
 
 const WalletConnection = () => {
-    // Get wallet state from Redux store
-    // const wallet = useSelector((state) => state.wallet);
-    // const dispatch = useDispatch();
-    const { wallet } = useContext(WalletContext);
+    // Get wallet state from Redux store.
+    const wallet = useSelector((state) => state.wallet);
+    const dispatch = useDispatch();
 
-    // const { wallet, updateWallet, clearWallet } = useContext(WalletContext);
     const [showWalletOptions, setShowWalletOptions] = useState(false);
     const [showLogoutButton, setShowLogoutButton] = useState(false);
+    // Local state to store the disconnect function received from PhantomConnect.
+    const [disconnectFn, setDisconnectFn] = useState(null);
 
+    // Callback to be passed to the wallet connect component(s).
+    const handleWalletConnected = (disconnectFunction) => {
+        setDisconnectFn(() => disconnectFunction);
+    };
 
     const handleLogout = async () => {
-        if (wallet && wallet.disconnect) {
-            await wallet.disconnect();
+        if (disconnectFn) {
+            await disconnectFn();
         }
-        // dispatch(clearWallet());
+        dispatch(clearWallet());
+        setDisconnectFn(null);
         setShowLogoutButton(false);
     };
 
@@ -74,15 +80,13 @@ const WalletConnection = () => {
         if (!wallet) {
             setShowWalletOptions(true);
         } else {
-            setShowLogoutButton((prev) => !prev);
+            setShowLogoutButton(prev => !prev);
         }
     };
 
-    // This effect "listens" to changes in the wallet state.
     useEffect(() => {
         if (wallet) {
-            console.log('Wallet updated in context:', wallet);
-            // You can execute additional logic here whenever the wallet changes.
+            console.log('Wallet updated in Redux store:', wallet);
         } else {
             console.log('No wallet connected.');
         }
@@ -96,8 +100,8 @@ const WalletConnection = () => {
                 onLogout={handleLogout}
                 showLogoutButton={showLogoutButton}
             />
-            { !wallet && showWalletOptions && (
-                <ComponentB />
+            {(!wallet && showWalletOptions) && (
+                <ComponentB onWalletConnected={handleWalletConnected} />
             )}
         </div>
     );

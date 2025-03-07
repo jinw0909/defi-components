@@ -5,7 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="46757719-4421-4f41-8e27-420e3f383bf5" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/getMetamaskProvider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MetamaskConnect/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MetamaskConnect/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/PhantomConnect/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/PhantomConnect/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/MyPage/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/MyPage/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/WalletConnect/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/WalletConnect/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/getPhantomProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/getPhantomProvider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,9 +35,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="PerforceDirect.Settings">
-    <option name="CHARSET" value="없음" />
-  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jinw0909&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/jinw0909/defi-components.git&quot;,
+    &quot;accountId&quot;: &quot;01842dc3-904f-407a-9cda-d167faa85037&quot;
+  }
+}</component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.2" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -66,7 +85,8 @@
       <option name="presentableId" value="Default" />
       <updated>1741137734907</updated>
       <workItem from="1741137736255" duration="27533000" />
-      <workItem from="1741223281811" duration="7649000" />
+      <workItem from="1741223281811" duration="25834000" />
+      <workItem from="1741312723498" duration="6686000" />
     </task>
     <servers />
   </component>

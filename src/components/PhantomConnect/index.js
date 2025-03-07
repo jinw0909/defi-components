@@ -1,36 +1,31 @@
-import React, {useState, useEffect, useCallback, useMemo, useContext} from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { PublicKey, Connection } from '@solana/web3.js';
 import { getPhantomProvider } from '../../utils';
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import ConnectButton from '../ConnectButton';
-import { WalletContext } from "../../context/WalletContext";
-// import {clearWallet, updateWallet} from "../../context/walletSlice";
-// import { useSelector, useDispatch } from "react-redux";
-// import { updateWallet, clearWallet } from "../../context/walletSlice";
+import { useDispatch } from "react-redux";
+import { updateWallet, clearWallet } from "../../context/walletSlice";
 
 const CUSTOM_RPC_URL = 'https://winter-evocative-silence.solana-mainnet.quiknode.pro/04a5e639b0bd9ceeec758a6140dc1aa1b08f62bd';
 const connection = new Connection(CUSTOM_RPC_URL);
 const provider = getPhantomProvider();
 
-const usePhantomProps = () => {
-    // const wallet = useSelector((state) => state.wallet);
-    // const dispatch = useDispatch();
-    const { wallet, updateWallet, clearWallet } = useContext(WalletContext);
+const usePhantomProps = (onConnected) => {
+    const dispatch = useDispatch();
     const [publicKey, setPublicKey] = useState(null);
 
-    // Define disconnect so we can pass it to the parent when connected
+    // Disconnect function to be passed to parent via onConnected callback
     const handleDisconnect = useCallback(async () => {
         console.log("calling phantom handleDisconnect()");
         if (!provider) return;
         try {
             await provider.disconnect();
-            clearWallet();
+            dispatch(clearWallet());
         } catch (error) {
             console.error(error.message);
         }
-    }, [clearWallet]);
+    }, [dispatch]);
 
-    // Define connect function
+    // Connect function to trigger wallet connection
     const handleConnect = useCallback(async () => {
         if (!provider) return;
         try {
@@ -40,17 +35,13 @@ const usePhantomProps = () => {
         }
     }, []);
 
+    // Fetch SOL balance for the connected wallet
     const handleFetchSolana = useCallback(async () => {
         if (!provider) return;
         try {
             let walletPublicKey = new PublicKey(provider.publicKey.toBase58());
             console.log("walletPublicKey: ", walletPublicKey);
-            // let tokenAccounts = await connection.getParsedTokenAccountsByOwner(walletPublicKey, {
-            //     programId: TOKEN_PROGRAM_ID
-            // });
-            // Fetch the SOL balance (in lamports) for the wallet public key
             const balanceLamports = await connection.getBalance(walletPublicKey);
-            // Convert lamports to SOL
             const balanceSOL = balanceLamports / 1e9;
             console.log("balanceSOL: ", balanceSOL);
             return balanceSOL;
@@ -70,17 +61,23 @@ const usePhantomProps = () => {
             const keyStr = pk.toBase58();
             console.log('Phantom connected:', keyStr);
             setPublicKey(keyStr);
-            let solAmount= await handleFetchSolana();
-            //updateWallet('phantom', keyStr, 3, handleDisconnect);
-            updateWallet({walletName: 'phantom', publicKey: keyStr, solAmount: solAmount, disconnect: handleDisconnect});
-            // dispatch(updateWallet({walletName: 'phantom', publicKey: keyStr, solAmount: solAmount}))
+            let solAmount = await handleFetchSolana();
+            // Update Redux state without including the disconnect function.
+            dispatch(updateWallet({
+                walletName: 'phantom',
+                publicKey: keyStr,
+                tokenBalance: solAmount
+            }));
+            // Pass the disconnect function to the parent via the onConnected callback.
+            if (onConnected && typeof onConnected === 'function') {
+                onConnected(handleDisconnect);
+            }
         });
 
         provider.on('disconnect', () => {
             console.log('Phantom disconnected');
             setPublicKey(null);
-            clearWallet();
-            // dispatch(clearWallet());
+            dispatch(clearWallet());
         });
 
         provider.on('accountChanged', (pk) => {
@@ -88,7 +85,7 @@ const usePhantomProps = () => {
                 console.log('Switched to Phantom account:', pk.toBase58());
                 setPublicKey(pk.toBase58());
             } else {
-                // Attempt to reconnect if needed
+                // Attempt to reconnect if needed.
                 provider.connect().catch((error) => {
                     console.error(`Failed to re-connect: ${error.message}`);
                 });
@@ -96,9 +93,11 @@ const usePhantomProps = () => {
         });
 
         return () => {
-            provider.disconnect();
+            provider.removeAllListeners('connect');
+            provider.removeAllListeners('disconnect');
+            provider.removeAllListeners('accountChanged');
         };
-    }, [clearWallet, handleDisconnect, handleFetchSolana, updateWallet]);
+    }, [dispatch, handleDisconnect, handleFetchSolana, onConnected]);
 
     return {
         publicKey,
@@ -108,9 +107,8 @@ const usePhantomProps = () => {
     };
 };
 
-const PhantomConnect = () => {
-    // Always call the hook unconditionally.
-    const phantomProps = usePhantomProps();
+const PhantomConnect = ({ onConnected }) => {
+    const phantomProps = usePhantomProps(onConnected);
 
     return (
         !provider ? (
@@ -123,7 +121,6 @@ const PhantomConnect = () => {
             </button>
         )
     );
-    // return <ConnectButton {...props} />;
 };
 
 export default React.memo(PhantomConnect);
